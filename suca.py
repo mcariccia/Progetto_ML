@@ -1,3 +1,0 @@
-letsgoski = 'palle'
-
-print(letsgoski)
