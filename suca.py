@@ -1,0 +1,3 @@
+letsgoski = 'palle'
+
+print(letsgoski)
