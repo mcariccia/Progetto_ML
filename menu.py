@@ -28,7 +28,29 @@ def update_output(text):
 
 # Funzioni per le operazioni di machine learning
 def Win_Preprocessing():
-    update_output("Esecuzione del preprocessing dei dati...")
+    finestraPreprocessing = tk.Toplevel(window)
+    finestraPreprocessing.title("PreProcessing")
+    finestraPreprocessing.geometry("400x400")
+
+    # Creazione delle etichette e delle variabili per i controlli
+    varBilanciamento = tk.StringVar()
+    sceltaBilanciamento = ["Nessun Bilanciamento", "SMOTE", "Random Over Sampling", "Random Under Sampling"]
+    dropdownBilanciamento = ttk.Combobox(finestraPreprocessing, textvariable=varBilanciamento, values=sceltaBilanciamento, state="readonly")
+    dropdownBilanciamento.pack(pady=5)
+    dropdownBilanciamento.current(0)
+
+    varStandardizzazione = tk.BooleanVar(value=True)
+    iStandardizzazione = tk.Checkbutton(finestraPreprocessing, text="Standardizzazione", variable=varStandardizzazione)
+    iStandardizzazione.pack(pady=5)
+
+    varNormalizzazione = tk.BooleanVar(value=True)
+    iNormalizzazione = tk.Checkbutton(finestraPreprocessing, text="Normalizzazione", variable=varNormalizzazione)
+    iNormalizzazione.pack(pady=5)
+
+    varSelezioneFeatures = tk.BooleanVar(value=True)
+    iSelezioneFeatures = tk.Checkbutton(finestraPreprocessing, text="Selezione Features", variable=varSelezioneFeatures)
+    iSelezioneFeatures.pack(pady=5)
+
 
 def Win_Classificatori():
     finestraClassificatore = tk.Toplevel(window)
@@ -38,7 +60,7 @@ def Win_Classificatori():
     #
     tk.Label(finestraClassificatore, text="Scegli il Classificatore:").pack(pady=10)
     variabileClassificatore = tk.StringVar()
-    scelteClassificatore = ["svm", "tree", "ann", "knn", "voting"]
+    scelteClassificatore = ["svm", "Naive Bayes", "ann", "knn", "voting"]
     dropdownClassificatore = ttk.Combobox(finestraClassificatore, textvariable=variabileClassificatore, values=scelteClassificatore, state="readonly")
     dropdownClassificatore.pack(pady=5)
     dropdownClassificatore.current(0)

@@ -7,23 +7,13 @@ from sklearn.model_selection import train_test_split, GridSearchCV, cross_val_sc
 from sklearn.preprocessing import StandardScaler
 from imblearn.over_sampling import SMOTE
 
-def TuningIperparametri(classificatore, x_train, y_train):
-    param_grid = {
-        'C': [0.01, 0.1, 1, 10, 100],
-        'gamma': [1, 0.1, 0.01, 0.001],
-        'kernel': ['linear', 'rbf', 'poly', 'sigmoid']
-    }
+def TuningIperparametri(classificatore, param_grid, x_train, y_train):
     grid_search = GridSearchCV(classificatore, param_grid, cv=5, refit=True, verbose=2)
     grid_search.fit(x_train, y_train)
     print("Migliori parametri trovati:", grid_search.best_params_)
     return grid_search.best_estimator_
 
-def TuningConCrossValidation(classificatore, x_train, y_train):
-    param_grid = {
-        'C': [0.01, 0.1, 1, 10, 100],
-        'gamma': [1, 0.1, 0.01, 0.001],
-        'kernel': ['linear', 'rbf', 'poly', 'sigmoid']
-    }
+def TuningConCrossValidation(classificatore, param_grid, x_train, y_train):
     grid_search = GridSearchCV(svm.SVC(), param_grid, cv=5, refit=True, verbose=2)
     grid_search.fit(x_train, y_train)
 
