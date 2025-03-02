@@ -9,7 +9,7 @@ from sklearn.metrics import silhouette_score
 from sklearn.model_selection import ParameterGrid
 
 # Caricamento dataset
-file_path = "world_population.csv"  # Modifica con il percorso corretto
+file_path = "world_population.csv"  
 df = pd.read_csv(file_path)
 
 # Selezione delle colonne rilevanti per il clustering
