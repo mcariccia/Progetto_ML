@@ -1,4 +1,4 @@
-# Importare le librerie necessarie
+
 import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
@@ -55,14 +55,14 @@ def analyse_cluster(X, n_clusters_array):
 
     return SSE, Sil_score
 
-# Determinare il miglior numero di cluster (K)
+# Determino il miglior numero di cluster (K)
 n_clusters_array = [2, 3, 4, 5, 8, 10, 12, 15, 20, 25]
 SSE, Sil_score = analyse_cluster(X_scaled, n_clusters_array)
 
-# Inserire manualmente il valore migliore di K (dopo aver visto il Metodo del Gomito)
-best_K = 6  # Sostituiscilo con il valore ottimale trovato
 
-# Funzione per il tuning degli iperparametri con Grid Search
+best_K = 6 
+
+# Funzione per il tuning degli iperparametri 
 def optimize_kmeans(X, best_K):
     param_grid = {
         "n_clusters": [best_K],
@@ -86,18 +86,18 @@ def optimize_kmeans(X, best_K):
     print("\n🔹 Migliori iperparametri trovati:", best_params)
     print("🔹 Miglior silhouette score:", best_score)
 
-# Ottimizzare gli iperparametri per il valore ottimale di K
+# Ottimizzo gli iperparametri per il valore ottimale di K
 optimize_kmeans(X_scaled, best_K)
 
-# Creare il modello finale con i parametri ottimizzati
+# Creo il modello finale con i parametri ottimizzati
 final_kmeans = KMeans(n_clusters=best_K, init="k-means++", n_init=20, max_iter=300, random_state=42)
 df["Cluster"] = final_kmeans.fit_predict(X_scaled)
 
-# Calcolare il Silhouette Score per valutare il clustering
+# Calcolo il Silhouette Score per valutare il clustering
 sil_score = silhouette_score(X_scaled, df["Cluster"])
 print(f"\n🔹 Silhouette Score: {sil_score:.4f}")
 
-# Visualizzare tutti i grafici in un'unica figura
+# Visualizzo tutti i grafici in un'unica figura
 plt.figure(figsize=(18, 6))
 
 # Grafico 1: Metodo del Gomito
@@ -127,6 +127,8 @@ plt.title("Distribuzione dei Cluster: Popolazione vs Crescita")
 plt.xscale("log")  # Scala logaritmica per migliorare la leggibilità
 plt.legend(title="Cluster")
 
-# Mostrare tutti i grafici
+# Mostro tutti i grafici
 plt.tight_layout()
 plt.show()
+
+ 
