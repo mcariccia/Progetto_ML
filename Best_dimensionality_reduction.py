@@ -29,7 +29,7 @@ class SelectKBestVar:
     def fit_transform(self, X):
         self.var = np.sort(np.var(X, axis=0))[::-1]  #ordiniamo la varianza di ogni attributo in senso decrescente
         self.selector = VarianceThreshold(threshold=self.var[self.k])  #selezioniamo come varianza quella del k-esimo elemento
-        X_reduced = self.selector.fit_transform(X)  #eliminiamo gli attributi con varianza minore o uguale  quella del k-esimo elemento
+        X_reduced = self.selector.fit_transform(X)  #eliminiamo gli attributi con varianza minore di quella del k-esimo elemento
         return X_reduced
     
     def transform(self, X):
@@ -106,9 +106,6 @@ for dim in range(1,X.shape[1]):
     test_x_red = skb3.transform(test_x)  
     knn_acc_skb3 = knn_acc_skb3 + [train_test_knn(train_x_red, training_y, test_x_red, test_y)]
         
-    sfs = SequentialFeatureSelector(KNeighborsClassifier(n_neighbors=1), n_features_to_select=dim)
-    train_x_red = sfs.fit_transform(training_x, training_y)
-    knn_acc_sfs = knn_acc_sfs + [train_test_knn(train_x_red, training_y, sfs.transform(test_x), test_y)]
 
 
 #inseriamo alla fine della lista l'accuratezza che si otterrebbe con tutti gli attributi
@@ -121,7 +118,6 @@ knn_acc_pca = knn_acc_pca + [acc]
 knn_acc_skb = knn_acc_skb + [acc]
 knn_acc_skb2 = knn_acc_skb2 + [acc]
 knn_acc_skb3 = knn_acc_skb3 + [acc]
-knn_acc_sfs = knn_acc_sfs + [acc]
 
 #calcoliamo la migliore dimensione per ogni metodo di riduzione sulla base del miglior risultato ottenuto
 BestDim_srp=knn_acc_srp.index(max(knn_acc_srp))
@@ -131,7 +127,6 @@ BestDim_pca=knn_acc_pca.index(max(knn_acc_pca))
 BestDim_skb=knn_acc_skb.index(max(knn_acc_skb))
 BestDim_skb2=knn_acc_skb2.index(max(knn_acc_skb2))
 BestDim_skb3=knn_acc_skb3.index(max(knn_acc_skb3))
-BestDim_sfs=knn_acc_sfs.index(max(knn_acc_sfs))
 
 #mostriamo i risultati
-print(f'Migliori dimensioni per ogni funzione di riduzione dimensionalità:\nSparseRandomProjection=: {BestDim_srp}\nGaussianRandomProjection: {BestDim_grp}\nFeatureAgglomeration: {BestDim_fa}\nPrincipalComponentsAnalisys: {BestDim_pca}\nScoring_chi2: {BestDim_skb}\nScoring_mutual_information: {BestDim_skb2}\nVarianceThreshold: {BestDim_skb3}\nSequentialFeaturesSelector: {BestDim_sfs}')
+print(f'Migliori dimensioni per ogni funzione di riduzione dimensionalità:\nSparseRandomProjection=: {BestDim_srp}\nGaussianRandomProjection: {BestDim_grp}\nFeatureAgglomeration: {BestDim_fa}\nPrincipalComponentsAnalisys: {BestDim_pca}\nScoring_chi2: {BestDim_skb}\nScoring_mutual_information: {BestDim_skb2}\nVarianceThreshold: {BestDim_skb3}\n')
