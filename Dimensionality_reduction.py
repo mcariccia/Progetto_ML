@@ -1,10 +1,8 @@
 import pandas as pd
 import numpy as np
-from sklearn.feature_selection import SelectKBest, chi2, mutual_info_classif
-from sklearn.random_projection import SparseRandomProjection, GaussianRandomProjection
-from sklearn.cluster import FeatureAgglomeration
+from sklearn.feature_selection import SelectKBest, mutual_info_classif
 from sklearn.decomposition import PCA
-from sklearn.feature_selection import VarianceThreshold
+
 
 
 class SelectKBestVar:
