@@ -154,7 +154,7 @@ cms = multilabel_confusion_matrix(test_y, pred_y, labels=np.unique(test_y)) #cal
 TPR,TNR,FPR,FNR,p,r,f1=compute_performances_multiclass(cms)  #calcoliamo le medie delle statistiche principali di performance di ogni classe
 
 print(f'Migliori Iperparametri individuati: k={best_k} elementi vicini cosiderati e {best_dist} come distanza utilizzata')
-print(f'L\'accuratezza è del {compute_accuracy(pred_y, test_y)}')
+print(f'L\'accuratezza è del {round(compute_accuracy(pred_y, test_y),2)}')
 print()
 
 #stampiamo le prestazioni medie in ordine TPR, TNR, FPR, FNR, p, r, F1
