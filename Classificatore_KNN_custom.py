@@ -31,8 +31,8 @@ def compute_performances_multiclass(cms):
         p[i] = TP[i] / (TP[i] + FP[i] + eps)
         r[i] = TPR[i]
         F1[i] = 2*r[i]*p[i] / (r[i] +p[i] + eps)
-    
-    return TPR.mean(), TNR.mean(), FPR.mean(), FNR.mean(), p.mean(), r.mean(), F1.mean()
+        
+    return TPR, TNR, FPR, FNR, p, r, F1
 
 
 
@@ -148,15 +148,20 @@ pred_y=best_clf.predict(test_x)
 
 
 #----RISULTATI----#
+
 #definiamo un valore di eps per evitare divisione per 0
 eps = np.finfo(float).eps
 cms = multilabel_confusion_matrix(test_y, pred_y, labels=np.unique(test_y)) #calcoliamo matrici di confusione per ogni classe
+
 TPR,TNR,FPR,FNR,p,r,f1=compute_performances_multiclass(cms)  #calcoliamo le medie delle statistiche principali di performance di ogni classe
 
 print(f'Migliori iperparametri individuati: k={best_k} elementi vicini considerati e {best_dist} come distanza utilizzata')
 print(f'L\'accuratezza è del {round(compute_accuracy(pred_y, test_y),2)}')
 print()
+print('Più nello specifico si sono ottenute sulle classi queste performance:')
+print()
 
-#stampiamo le prestazioni medie in ordine TPR, TNR, FPR, FNR, p, r, F1
-print('Più nello specifico in media si sono ottenute sulle classi queste performance:')
-print(f'TPR medio:{round(TPR,2)}\nTNR medio:{round(TNR,2)}\nFPR medio:{round(FPR,2)}\nFNR medio:{round(FNR,2)}\nprecision medio:{round(p,2)}\nrecall medio:{round(r,2)}\nf1 score medio:{round(f1,2)}\n')
+for i in range(len(np.unique(test_y))):
+    #stampiamo le prestazioni in ordine TPR, TNR, FPR, FNR, p, r, F1
+    print(np.unique(test_y)[i])
+    print(f'TPR: {round(TPR[i],2)}, TNR: {round(TNR[i],2)}, FPR: {round(FPR[i],2)}, FNR: {round(FNR[i],2)}, precision: {round(p[i],2)}, f1 score: {round(f1[i],2)}\n')
