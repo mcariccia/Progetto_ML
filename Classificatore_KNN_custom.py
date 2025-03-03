@@ -158,5 +158,5 @@ print(f'L\'accuratezza è del {round(compute_accuracy(pred_y, test_y),2)}')
 print()
 
 #stampiamo le prestazioni medie in ordine TPR, TNR, FPR, FNR, p, r, F1
-print('Più nello specifico le classi hanno ottenuto queste performance medie:')
+print('Più nello specifico in media si sono ottenute sulle classi queste performance:')
 print(f'TPR medio:{round(TPR,2)}\nTNR medio:{round(TNR,2)}\nFPR medio:{round(FPR,2)}\nFNR medio:{round(FNR,2)}\nprecision medio:{round(p,2)}\nrecall medio:{round(r,2)}\nf1 score medio:{round(f1,2)}\n')
