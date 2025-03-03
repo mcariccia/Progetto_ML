@@ -7,8 +7,16 @@ from sklearn.model_selection import train_test_split, GridSearchCV
 from sklearn.preprocessing import StandardScaler
 from imblearn.over_sampling import SMOTE
 from addestramenti import AddestramentoClassificatori
+from preprocessing import preprocessing
+from dataAnalysis import data_analysis
 
 df = pd.read_csv("world_population.csv")
+
+# Variabili globali per memorizzare i dati preprocessati
+x_train_global = None
+x_test_global = None
+y_train_global = None
+y_test_global = None
 
 # Creazione della finestra principale
 window = tk.Tk()
@@ -51,16 +59,36 @@ def Win_Preprocessing():
     iSelezioneFeatures = tk.Checkbutton(finestraPreprocessing, text="Selezione Features", variable=varSelezioneFeatures)
     iSelezioneFeatures.pack(pady=5)
 
+    # Rimozione outlier
+    varRimozioneOutlier = tk.BooleanVar(value=True)
+    iRimozioneOutlier = tk.Checkbutton(finestraPreprocessing, text="Rimozione Outlier", variable=varRimozioneOutlier)
+    iRimozioneOutlier.pack(pady=5)
+
+    def applica_preprocessing():
+        global x_train_global, x_test_global, y_train_global, y_test_global
+        x_train, x_test, y_train, y_test = preprocessing(
+            df,
+            varBilanciamento.get(),
+            varStandardizzazione.get(),
+            varNormalizzazione.get(),
+            varSelezioneFeatures.get(),
+            varRimozioneOutlier.get()
+        )
+        x_train_global, x_test_global, y_train_global, y_test_global = x_train, x_test, y_train, y_test
+        update_output("PreProcessing completato")
+        finestraPreprocessing.destroy()
+
+    pulsanteApplica = tk.Button(finestraPreprocessing, text="Applica", command=applica_preprocessing)
+    pulsanteApplica.pack(pady=20)
 
 def Win_Classificatori():
     finestraClassificatore = tk.Toplevel(window)
     finestraClassificatore.title("Addestra Classificatore")
     finestraClassificatore.geometry("400x400")
 
-    #
     tk.Label(finestraClassificatore, text="Scegli il Classificatore:").pack(pady=10)
     variabileClassificatore = tk.StringVar()
-    scelteClassificatore = ["svm", "Naive Bayes", "ann", "knn", "voting"]
+    scelteClassificatore = ["svm", "Naive Bayes", "kmeans", "ensemble", "knn Custom"]
     dropdownClassificatore = ttk.Combobox(finestraClassificatore, textvariable=variabileClassificatore, values=scelteClassificatore, state="readonly")
     dropdownClassificatore.pack(pady=5)
     dropdownClassificatore.current(0)
@@ -73,7 +101,6 @@ def Win_Classificatori():
     iTuning = tk.Checkbutton(finestraClassificatore, text="Tuning", variable=varTuning)
     iTuning.pack(pady=5)
 
-    #
     tk.Label(finestraClassificatore, text="Calcolo della Distanza:").pack(pady=5)
     variabileMetrica = tk.StringVar()
     scelteMetrica = ["manhattan", "euclidean", "chebyshev"]
@@ -81,7 +108,6 @@ def Win_Classificatori():
     dropdownMetrica.pack(pady=5)
     dropdownMetrica.current(0)
 
-    #
     tk.Label(finestraClassificatore, text="Valore di k:").pack(pady=5)
     variabileK = tk.StringVar(value="0")
     entryK = tk.Entry(finestraClassificatore, textvariable=variabileK)
@@ -98,18 +124,17 @@ def Win_Classificatori():
     pulsanteAddestra.pack(pady=20)
 
     def addestramento(classificatore, cross_validation, tuning, distanza, k, finestra):
+        global x_train_global, x_test_global, y_train_global, y_test_global
         # Converte k in intero
         valk = int(k)
         # Chiama la funzione classifiers passando anche i parametri 'distanza' e 'kValue'
-        y_pred, accuracy = AddestramentoClassificatori(df, classificatore, cross_validation, tuning, distanza, valk)
+        y_pred, accuracy = AddestramentoClassificatori(x_train_global, y_train_global, x_test_global, y_test_global, classificatore, cross_validation, tuning, distanza, valk)
 
         update_output(f"L'accuratezza per l'algoritmo {classificatore} con le impostazioni inserite per l'addestramento è {accuracy}")
-    
-        
         finestra.destroy()
 
 def Win_AnalisiDati():
-    update_output("Esecuzione dell'analisi dei dati...")
+    data_analysis()
 
 # Creazione dei pulsanti
 ButtonPreProcessing = tk.Button(window, text="PreProcessing", command=Win_Preprocessing)

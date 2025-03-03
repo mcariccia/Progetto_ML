@@ -277,4 +277,3 @@ def data_analysis ():
     histogram(X, Y)
     pie_chart(Y)
     
-data_analysis()

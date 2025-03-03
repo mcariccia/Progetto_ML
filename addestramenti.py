@@ -12,14 +12,7 @@ from sklearn.metrics import accuracy_score
 from sklearn.model_selection import cross_val_score
 
 
-def AddestramentoClassificatori(df, classificatore, cross_validation, tuning, distanza, valk):
-    # Seleziona le caratteristiche rilevanti e la variabile target
-    x = df[['2022 Population', 'Area (km²)', 'Density (per km²)', 'Growth Rate']]
-    y = df['Continent']
-
-    # Dividi il dataset in set di addestramento e test
-    x_train, x_test, y_train, y_test = train_test_split(x, y, test_size=0.2, random_state=42)
-    print("Dataset diviso in set di addestramento e test")
+def AddestramentoClassificatori(x_train, x_test, y_train, y_test, classificatore, cross_validation, tuning, distanza, valk):
 
     # Bilancia le classi nel set di addestramento utilizzando SMOTE
     smote = SMOTE(random_state=42)
@@ -92,6 +85,12 @@ def AddestramentoClassificatori(df, classificatore, cross_validation, tuning, di
 
         print(f"Accuratezza del modello: {accuracy:.2f}")
         print("Modello addestrato")
-    #elif classificatore == "ensemble":
+
+    elif classificatore == "ensemble":
+        print()
+    elif classificatore == "kmeans":
+        print()
+    elif classificatore == "knn Custom":
+        print()
 
     return y_predv, accuracy
