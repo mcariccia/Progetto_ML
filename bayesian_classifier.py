@@ -86,77 +86,116 @@
 
 import numpy as np
 import pandas as pd
-from sklearn.model_selection import StratifiedKFold, GridSearchCV, train_test_split
+from sklearn.model_selection import StratifiedKFold, GridSearchCV, train_test_split, cross_val_score
 from sklearn.naive_bayes import ComplementNB
 from sklearn.metrics import accuracy_score, classification_report, confusion_matrix
 from imblearn.pipeline import Pipeline as ImbPipeline
 from imblearn.over_sampling import SMOTE
 from data_standardization import standardization
 
-# Carico il dataset
-data = pd.read_csv('world_population.csv')
+def naiveBayes():
+    # Carico il dataset
+    data = pd.read_csv('world_population.csv')
 
-data = data.drop(['CCA3', 'Country/Territory', 'Capital', 'Rank'], axis=1)
+    data = data.drop(['CCA3', 'Country/Territory', 'Capital', 'Rank'], axis=1)
 
-# --- FEATURE ENGINEERING ---
-population_cols = ['2022 Population', '2020 Population', '2015 Population', '2010 Population',
-                   '2000 Population', '1990 Population', '1980 Population', '1970 Population']
-data['Pop_Mean'] = data[population_cols].mean(axis=1)
-data['Growth_Rate_x_Density'] = data['Growth Rate'] * data['Density (per km²)']
-data['Pop_2022_over_Mean'] = data['2022 Population'] / data['Pop_Mean']
-data['Pop_2022_over_Area'] = data['2022 Population'] / data['Area (km²)']
-data['Pop_2022_over_2010'] = data['2022 Population'] / data['2010 Population']
-data['Pop_2010_over_2000'] = data['2010 Population'] / data['2000 Population']
+    # --- FEATURE ENGINEERING ---
+    population_cols = ['2022 Population', '2020 Population', '2015 Population', '2010 Population',
+                    '2000 Population', '1990 Population', '1980 Population', '1970 Population']
+    data['Pop_Mean'] = data[population_cols].mean(axis=1)
+    data['Growth_Rate_x_Density'] = data['Growth Rate'] * data['Density (per km²)']
+    data['Pop_2022_over_Mean'] = data['2022 Population'] / data['Pop_Mean']
+    data['Pop_2022_over_Area'] = data['2022 Population'] / data['Area (km²)']
+    data['Pop_2022_over_2010'] = data['2022 Population'] / data['2010 Population']
+    data['Pop_2010_over_2000'] = data['2010 Population'] / data['2000 Population']
 
-#--- PREPROCESSING ---
-#Rimuovo l'outlier PRIMA del preprocessing
-data = data[data['Area (km²)'] > 1000] 
+    #--- PREPROCESSING ---
+    #Rimuovo l'outlier PRIMA del preprocessing
+    data = data[data['Area (km²)'] > 1000] 
 
-X_processed, y, preprocessor = standardization(
-    data,
-    target_column='Continent',
-    scaler_type='minmax',
-    handle_missing='drop',
-    categorical_encoding = 'onehot'
-)
+    X_processed, y, preprocessor = standardization(
+        data,
+        target_column='Continent',
+        scaler_type='minmax',
+        handle_missing='drop',
+        categorical_encoding = 'onehot'
+    )
 
-# --- DIVISIONE TRAIN/TEST INIZIALE ---
-X_train, X_test, y_train, y_test = train_test_split(
-    X_processed, y, test_size=0.2, random_state=42, stratify=y
-)
-print(f"Dimensioni set di training: {X_train.shape}")
-print(f"Dimensioni set di test: {X_test.shape}")
+    # --- DIVISIONE TRAIN/TEST INIZIALE ---
+    X_train, X_test, y_train, y_test = train_test_split(
+        X_processed, y, test_size=0.2, random_state=42, stratify=y
+    )
+    print(f"Dimensioni set di training: {X_train.shape}")
+    print(f"Dimensioni set di test: {X_test.shape}")
 
-# --- MODELLO (ImbPipeline:  SMOTE + ComplementNB) ---
-pipeline = ImbPipeline(steps=[
-    ('smote', SMOTE(random_state=42, k_neighbors=2)),
-    ('classifier', ComplementNB())
-])
+    # --- MODELLO (ImbPipeline:  SMOTE + ComplementNB) ---
+    pipeline = ImbPipeline(steps=[
+        ('smote', SMOTE(random_state=42, k_neighbors=2)),
+        ('classifier', ComplementNB())
+    ])
 
-# --- GRID SEARCH CON CROSS-VALIDATION (sul set di training) ---
-cv = StratifiedKFold(n_splits=5, shuffle=True, random_state=42)
-param_grid = {
-    'classifier__alpha': [0.1, 0.5, 1.0, 2.0, 5.0],
-    'classifier__norm': [True, False]
-}
+    # --- GRID SEARCH CON CROSS-VALIDATION (sul set di training) ---
+    cv = StratifiedKFold(n_splits=5, shuffle=True, random_state=42)
+    param_grid = {
+        'classifier__alpha': [0.1, 0.5, 1.0, 2.0, 5.0],
+        'classifier__norm': [True, False]
+    }
 
-print("Avvio grid search con 5-fold cross-validation...")
-grid_search = GridSearchCV(pipeline, param_grid, cv=cv, scoring='accuracy', verbose=1, n_jobs=-1, return_train_score=True)
-grid_search.fit(X_train, y_train)  # Grid search solo sui dati di training 
+    print("Avvio grid search con 5-fold cross-validation...")
+    grid_search = GridSearchCV(pipeline, param_grid, cv=cv, scoring='accuracy', verbose=1, n_jobs=-1, return_train_score=True)
+    grid_search.fit(X_train, y_train)  # Grid search solo sui dati di training 
 
-# --- RISULTATI TUNING ---
-print(f"\nMigliori parametri trovati: {grid_search.best_params_}")
-print(f"Migliore accuratezza (CV): {grid_search.best_score_:.4f}")
+    # --- RISULTATI TUNING ---
+    print(f"\nMigliori parametri trovati: {grid_search.best_params_}")
+    print(f"Migliore accuratezza (CV): {grid_search.best_score_:.4f}")
 
-# --- VALUTAZIONE SUL TEST SET ---
-best_model = grid_search.best_estimator_  # Questo modello è già addestrato sul set di training completo
-y_pred = best_model.predict(X_test)
+    # --- VALUTAZIONE SUL TEST SET ---
+    best_model = grid_search.best_estimator_  # Questo modello è già addestrato sul set di training completo
+    y_pred = best_model.predict(X_test)
 
-# --- METRICHE DI VALUTAZIONE FINALE ---
-test_accuracy = accuracy_score(y_test, y_pred)
-print(f"\n=== VALUTAZIONE FINALE ===")
-print(f"Accuratezza sul test set: {test_accuracy:.4f}")
-print("\nReport di classificazione:")
-print(classification_report(y_test, y_pred, zero_division=0))
-print("\nMatrice di confusione:")
-print(confusion_matrix(y_test, y_pred))
+    # --- METRICHE DI VALUTAZIONE FINALE ---
+    test_accuracy = accuracy_score(y_test, y_pred)
+    print(f"\n=== VALUTAZIONE FINALE ===")
+    print(f"Accuratezza sul test set: {test_accuracy:.4f}")
+    print("\nReport di classificazione:")
+    print(classification_report(y_test, y_pred, zero_division=0))
+    print("\nMatrice di confusione:")
+    print(confusion_matrix(y_test, y_pred))
+
+
+def raw_naiveBayes():
+    # Carico il dataset
+    data = pd.read_csv('world_population.csv')
+
+    # Rimozione di colonne non necessarie
+    data = data.drop(['CCA3', 'Country/Territory', 'Capital', 'Rank'], axis=1)
+
+    # Rimozione di outlier
+    data = data[data['Area (km²)'] > 1000]
+
+    # Divisione in feature e target
+    X = data.drop('Continent', axis=1)
+    y = data['Continent']
+
+    # Train-test split
+    X_train, X_test, y_train, y_test = train_test_split(
+        X, y, test_size=0.2, random_state=42, stratify=y
+    )
+
+    # Addestramento del modello base
+    model = ComplementNB()
+    model.fit(X_train, y_train)
+
+    # Valutazione
+    y_pred = model.predict(X_test)
+    base_accuracy = accuracy_score(y_test, y_pred)
+
+    # Cross-validation per una stima più robusta
+    cv_scores = cross_val_score(model, X, y, cv=5)
+
+    print(f"Accuratezza sul test set: {base_accuracy:.4f}")
+    print(f"Accuratezza media CV: {cv_scores.mean():.4f} ± {cv_scores.std():.4f}")
+    print("\nReport di classificazione:")
+    print(classification_report(y_test, y_pred, zero_division=0))
+    
+raw_naiveBayes()
