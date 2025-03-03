@@ -102,7 +102,7 @@ def AddestramentoClassificatori(x_train, x_test, y_train, y_test, classificatore
             for d in distanze:  
                 for k in range(1,20):  
                     
-                    train_x, validation_x, train_y,  validation_y= train_test_split(x_train, y_train,random_state=0, test_size=0.25,stratify=train_y)
+                    train_x, validation_x, train_y,  validation_y= train_test_split(x_train, y_train,random_state=0, test_size=0.25,stratify=y_train)
 
     
                     clf=KNNCustom(k,d)  
