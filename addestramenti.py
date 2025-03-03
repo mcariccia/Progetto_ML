@@ -126,7 +126,7 @@ def AddestramentoClassificatori(x_train, x_test, y_train, y_test, classificatore
         clf.fit(x_train, y_train)
         y_pred = clf.predict(x_test)
         accuracy = (y_pred == y_test).sum() / len(y_pred)
-        
+        print(f'L\'accuratezza è del {round(accuracy,2)}')
         print("Modello addestrato")
 
     return y_predv, accuracy
