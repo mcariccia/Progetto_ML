@@ -91,6 +91,42 @@ def AddestramentoClassificatori(x_train, x_test, y_train, y_test, classificatore
     elif classificatore == "kmeans":
         print()
     elif classificatore == "knn Custom":
-        print()
+        if tuning:
+            #-----TUNING DEGLI IPERPARAMETRI--------#
+           
+            best_accuracy=-1      
+            best_k=-1             
+            best_dist=-1          
+            distanze=['distanza_euclidea','distanza_manhattan'] 
+
+            for d in distanze:  
+                for k in range(1,20):  
+                    
+                    train_x, validation_x, train_y,  validation_y= train_test_split(x_train, y_train,random_state=0, test_size=0.25,stratify=train_y)
+
+    
+                    clf=KNNCustom(k,d)  
+                    clf.fit(train_x,train_y)
+                    pred_y=clf.predict(validation_x)
+                    
+                    if (pred_y == validation_y).sum() / len(pred_y)>best_accuracy:   
+                        best_accuracy=compute_accuracy(pred_y,validation_y)    
+                        best_k=k
+                        best_dist=d
+
+            clf=KNNCustom(best_k,best_dist)
+    
+        else:
+            k=5
+            d='distanza_euclidea'
+            clf=KNNCustom(k,d)
+            
+
+        # Addestriamo il modello
+        clf.fit(x_train, y_train)
+        y_pred = clf.predict(x_test)
+        accuracy = (y_pred == y_test).sum() / len(y_pred)
+        
+        print("Modello addestrato")
 
     return y_predv, accuracy
