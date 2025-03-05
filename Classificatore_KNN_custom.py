@@ -153,7 +153,7 @@ pred_y=best_clf.predict(test_x)
 eps = np.finfo(float).eps
 cms = multilabel_confusion_matrix(test_y, pred_y, labels=np.unique(test_y)) #calcoliamo matrici di confusione per ogni classe
 
-TPR,TNR,FPR,FNR,p,r,f1=compute_performances_multiclass(cms)  #calcoliamo le medie delle statistiche principali di performance di ogni classe
+TPR,TNR,FPR,FNR,p,r,f1=compute_performances_multiclass(cms)  #calcoliamo le statistiche principali di performance per ogni classe
 
 print(f'Migliori iperparametri individuati: k={best_k} elementi vicini considerati e {best_dist} come distanza utilizzata')
 print(f'L\'accuratezza è del {round(compute_accuracy(pred_y, test_y),2)}')
