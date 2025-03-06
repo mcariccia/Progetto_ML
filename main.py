@@ -29,7 +29,7 @@ class App:
         self.data_analysis_button.pack(pady=20)
 
         self.df = pd.read_csv("world_population.csv")
-        self.x = self.df[['2022 Population','2020 Population','2015 Population','2010 Population','2000 Population','1990 Population','1980 Population','1970 Population', 'Area (km²)', 'Density (per km²)', 'Growth Rate', 'World Population Percentage']]
+        self.x = self.df.select_dtypes(include=[np.number])
         self.y = self.df['Continent']
         self.data = Dataset(self.x, self.y)
 
@@ -73,7 +73,7 @@ class App:
     def open_classifiers_window(self):
         self.finestraClassificatore = Toplevel(self.root)
         self.finestraClassificatore.title("Addestra Classificatore")
-        self.finestraClassificatore.geometry("500x500")  # Più grande
+        self.finestraClassificatore.geometry("500x200")  # Più grande
 
         tk.Label(self.finestraClassificatore, text="Scegli il Classificatore:", font=("Arial", 12, "bold")).pack(pady=15)
         variabileClassificatore = tk.StringVar()
