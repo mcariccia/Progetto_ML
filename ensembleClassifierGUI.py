@@ -41,6 +41,7 @@ class Ensemble_classifier:
     #hard voting per ottenere la predizione finale    
     def hard_voting(self):
         self.hard_pred = [mode([self.DTree_pred[i], self.SVC_pred[i], self.NBayes_pred[i]]) for i in range(len(self.DTree_pred))]
+        return self.hard_pred
       
 #funzione per stampare accuratezza, precisione, recall ed f1 di ogni classificatore nell'ensemble
 #considerando il fatto che il problema è multiclasse, usa una media 'macro' per assegnare lo stesso peso a tutte le classi  
@@ -64,6 +65,8 @@ def evaluate_ensemble (ensemble, Y_test):
     print("Hard Voting Precision: ", precision_score(Y_test, ensemble.hard_pred, average='macro', zero_division= 0))
     print("Hard Voting Recall: ", recall_score(Y_test, ensemble.hard_pred, average='macro'))
     print("Hard Voting F1: ", f1_score(Y_test, ensemble.hard_pred, average='macro'), "\n")
+    
+    return accuracy_score(Y_test, ensemble.hard_pred)
         
 def ensemble_classifier (X_train, X_test, Y_train, Y_test):    
     #crea il classificatore
@@ -76,10 +79,11 @@ def ensemble_classifier (X_train, X_test, Y_train, Y_test):
     ensemble_class.base_pred(X_test)
     
     #esegue il voto di maggioranza
-    ensemble_class.hard_voting()
+    y_pred = ensemble_class.hard_voting()
     
-    #valuta i risultati ottenuti
-    evaluate_ensemble(ensemble_class, Y_test)
+    accuracy = evaluate_ensemble(ensemble_class, Y_test)
+    
+    return y_pred, accuracy
 
 
 #Tuning del decision tree:
@@ -87,7 +91,7 @@ def ensemble_classifier (X_train, X_test, Y_train, Y_test):
 
 def DTree_max_depth (X, Y):
     #divisione del dataset in training e test
-    X_train, X_test, Y_train, Y_test = train_test_split(X, Y, test_size=0.2, random_state=30, stratify=None)
+    X_train, X_test, Y_train, Y_test = train_test_split(X, Y, test_size=0.2, random_state=42, stratify=Y)
     
     #creazione di una lista con tutti i valori considerati dal tuning
     max_depth_range = list(range(1, 25))
@@ -106,7 +110,7 @@ def DTree_max_depth (X, Y):
 
 def DTree_max_leaf (X, Y):
     #divisione del dataset in training e test
-    X_train, X_test, Y_train, Y_test = train_test_split(X, Y, test_size=0.2, random_state=30, stratify=None)
+    X_train, X_test, Y_train, Y_test = train_test_split(X, Y, test_size=0.2, random_state=42, stratify=Y)
     
     #creazione di una lista con tutti i valori considerati dal tuning
     max_leaf_nodes = list(range(2, 25))
@@ -125,7 +129,7 @@ def DTree_max_leaf (X, Y):
 
 def DTree_min_gain (X, Y):
     #divisione del dataset in training e test
-    X_train, X_test, Y_train, Y_test = train_test_split(X, Y, test_size=0.2, random_state=30, stratify=None)
+    X_train, X_test, Y_train, Y_test = train_test_split(X, Y, test_size=0.2, random_state=42, stratify=Y)
     
     #creazione di una lista con tutti i valori considerati dal tuning
     min_gain_val = [0.2, 0.1, 0.05, 0.025, 0.0125, 0.00625, 0.003125]
@@ -145,7 +149,7 @@ def DTree_min_gain (X, Y):
 #tuning del decision tree usando il gridsearch per valutare la combinazione migliore dei 3 iperparametri e del criterio di split
 def DTree_gridsearch (X, Y):
     #divisione del dataset in training e test
-    X_train, X_test, Y_train, Y_test = train_test_split(X, Y, test_size=0.2, random_state=30, stratify=None)
+    X_train, X_test, Y_train, Y_test = train_test_split(X, Y, test_size=0.2, random_state=42, stratify=Y)
     
     #definzione del dizionario con i parametri da valutare:
     param_dtree_tune = {'criterion'             : ['gini', 'entropy'], #criterio di split
@@ -167,7 +171,7 @@ def DTree_gridsearch (X, Y):
 #tuning del support vector classifier con il gridsearch
 def SVC_gridsearch (X, Y):
     #divisione del dataset in training e test
-    X_train, X_test, Y_train, Y_test = train_test_split(X, Y, test_size=0.2, random_state=30, stratify=None)
+    X_train, X_test, Y_train, Y_test = train_test_split(X, Y, test_size=0.2, random_state=42, stratify=Y)
     
     #definzione del dizionario con i parametri da valutare:
     param_svc_tune = {'C'    : [0.1, 1, 10, 100, 1000], #peso dato alla variabile di slack nell'algoritmo
