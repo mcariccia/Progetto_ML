@@ -102,7 +102,7 @@ class App:
             varSelezioneFeatures.get(),
             varRimozioneOutlier.get()
         )
-        self.write_to_terminal("Preprocessing applicato.")
+        self.write_to_terminal("Preprocessing applicato")
         self.preprocess_window.destroy()  # Chiudi la finestra di preprocessing
         self.root.focus()
         

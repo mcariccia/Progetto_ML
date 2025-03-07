@@ -25,17 +25,19 @@ class Dataset:
         self.y = y
 
     def preprocessing(self, balancing, scaler, featuresselection, outliersremoval):
+        x = self.x
+
         if featuresselection == "Chi-Squared Selection":
             selector = SelectKBest(chi2, k=5)
-            self.x = selector.fit_transform(self.x, self.y)
+            x = selector.fit_transform(self.x, self.y)
         elif featuresselection == "Mutual Information":
-            selector = SelectKBest(mutual_info_classif, k=5)
-            self.x = selector.fit_transform(self.x, self.y)
+            selector = SelectKBest(mutual_info_classif, k=6)
+            x = selector.fit_transform(self.x, self.y)
         elif featuresselection == "F-Classif":
             selector = SelectKBest(f_classif, k=5)
-            self.x = selector.fit_transform(self.x, self.y) 
+            x = selector.fit_transform(self.x, self.y)
 
-        x_train, x_test, y_train, y_test = train_test_split(self.x, self.y, test_size=0.2, random_state=42, stratify= self.y)
+        x_train, x_test, y_train, y_test = train_test_split(x, self.y, test_size=0.2, random_state=42, stratify= self.y)
 
         if outliersremoval:
             z = np.abs(stats.zscore(x_train))
