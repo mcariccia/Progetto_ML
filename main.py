@@ -11,14 +11,14 @@ class App:
     def __init__(self, root):
         self.root = root
         self.root.title("Machine Learning App")
-        self.root.geometry("1000x800")  # Finestra principale più grande
-        self.root.resizable(False, False)
+        self.root.geometry("1000x800")  # Imposta la dimensione della finestra principale
+        self.root.resizable(False, False)  # Disabilita il ridimensionamento della finestra
 
-        # Terminale di output più grande con caratteri ingranditi
+        # Crea un terminale di output più grande con font più grande
         self.output_terminal = scrolledtext.ScrolledText(root, height=15, width=90, state='disabled', font=("Arial", 12))
         self.output_terminal.pack(pady=30)
 
-        # Pulsanti più grandi con font aumentato e più spazio tra loro
+        # Crea pulsanti più grandi con dimensione del font aumentata e più spaziatura
         self.preprocess_button = tk.Button(root, text="Preprocessing", font=("Arial", 14, "bold"), width=25, height=2, command=self.open_preprocessing_window)
         self.preprocess_button.pack(pady=20)
 
@@ -28,17 +28,20 @@ class App:
         self.data_analysis_button = tk.Button(root, text="Analisi dei Dati", font=("Arial", 14, "bold"), width=25, height=2, command=self.open_data_analysis_window)
         self.data_analysis_button.pack(pady=20)
 
+        # Carica il dataset e inizializza l'oggetto Dataset
         self.df = pd.read_csv("world_population.csv")
         self.x = self.df.select_dtypes(include=[np.number])
         self.y = self.df['Continent']
         self.data = Dataset(self.x, self.y)
 
     def open_preprocessing_window(self):
+        # Crea una nuova finestra per il preprocessing
         self.preprocess_window = Toplevel(self.root)
         self.preprocess_window.title("Preprocessing")
-        self.preprocess_window.geometry("500x500")  # Finestra più grande
+        self.preprocess_window.geometry("500x400")  # Imposta la dimensione della finestra di preprocessing
         self.preprocess_window.resizable(False, False)
 
+        # Etichetta per la selezione delle features
         labelFeatures = tk.Label(self.preprocess_window, text="Scegli il tipo di Selezione di Features", font=("Arial", 12, "bold"))
         labelFeatures.pack(pady=15)
         varSelezioneFeatures = tk.StringVar()
@@ -47,6 +50,7 @@ class App:
         dropdownSelezioneFeatures.pack(pady=5)
         dropdownSelezioneFeatures.current(0)
 
+        # Etichetta per il bilanciamento
         labelBilanciamento = tk.Label(self.preprocess_window, text="Scegli il tipo di Bilanciamento", font=("Arial", 12, "bold"))
         labelBilanciamento.pack(pady=15)
         varBilanciamento = tk.StringVar()
@@ -55,6 +59,7 @@ class App:
         dropdownBilanciamento.pack(pady=5)
         dropdownBilanciamento.current(0)
 
+        # Etichetta per lo scaler
         labelScaler = tk.Label(self.preprocess_window, text="Scegli lo Scaler in base al classificatore", font=("Arial", 12, "bold"))
         labelScaler.pack(pady=15)
         varScaler = tk.StringVar()
@@ -63,18 +68,22 @@ class App:
         dropdownScaler.pack(pady=5)
         dropdownScaler.current(0)
 
+        # Checkbox per la rimozione degli outlier
         varRimozioneOutlier = tk.BooleanVar(value=False)
         iRimozioneOutlier = tk.Checkbutton(self.preprocess_window, text="Rimozione Outlier", font=("Arial", 12), variable=varRimozioneOutlier)
         iRimozioneOutlier.pack(pady=10)
 
+        # Pulsante per applicare il preprocessing
         pulsanteApplica = tk.Button(self.preprocess_window, text="Applica", font=("Arial", 14, "bold"), width=15, height=1, command=lambda: self.apply_preprocessing(varBilanciamento, varScaler, varSelezioneFeatures, varRimozioneOutlier))
         pulsanteApplica.pack(pady=15)
 
     def open_classifiers_window(self):
+        # Crea una nuova finestra per l'addestramento del classificatore
         self.finestraClassificatore = Toplevel(self.root)
         self.finestraClassificatore.title("Addestra Classificatore")
-        self.finestraClassificatore.geometry("500x200")  # Più grande
+        self.finestraClassificatore.geometry("500x200")
 
+        # Etichetta per la selezione del classificatore
         tk.Label(self.finestraClassificatore, text="Scegli il Classificatore:", font=("Arial", 12, "bold")).pack(pady=15)
         variabileClassificatore = tk.StringVar()
         scelteClassificatore = ["SVM", "Naive Bayes", "Decision Tree", "Ensemble classifier", "KNN Custom"]
@@ -82,6 +91,7 @@ class App:
         dropdownClassificatore.pack(pady=5)
         dropdownClassificatore.current(0)
         
+        # Pulsante per addestrare il classificatore
         pulsanteAddestra = tk.Button(self.finestraClassificatore, text="Addestra", font=("Arial", 14, "bold"), width=15, height=1, command=lambda: self.addestra(
             self.data.x_train,
             self.data.x_test,
@@ -92,6 +102,7 @@ class App:
         pulsanteAddestra.pack(pady=20)
 
     def open_data_analysis_window(self):
+        # Esegui l'analisi dei dati
         data_analysis()
 
     def apply_preprocessing(self, varBilanciamento, varScaler, varSelezioneFeatures, varRimozioneOutlier):
@@ -129,6 +140,7 @@ class App:
 
 
     def write_to_terminal(self, message):
+        # Scrivi un messaggio nel terminale di output
         self.output_terminal.config(state='normal')
         self.output_terminal.insert(tk.END, message + '\n')
         self.output_terminal.config(state='disabled')
@@ -138,4 +150,3 @@ if __name__ == "__main__":
     root = tk.Tk()
     app = App(root)
     root.mainloop()
-    

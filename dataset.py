@@ -16,28 +16,27 @@ class Dataset:
         self.y_train = None
         self.y_test = None
 
-    def set_data(self, x_train, x_test, y_train, y_test, x, y):
+    def set_data(self, x_train, x_test, y_train, y_test):
         self.x_train = x_train
         self.x_test = x_test
         self.y_train = y_train
         self.y_test = y_test
-        self.x = x
-        self.y = y
 
     def preprocessing(self, balancing, scaler, featuresselection, outliersremoval):
         x = self.x
+        x_copy = x
 
         if featuresselection == "Chi-Squared Selection":
             selector = SelectKBest(chi2, k=5)
-            x = selector.fit_transform(self.x, self.y)
+            x_copy = selector.fit_transform(self.x, self.y)
         elif featuresselection == "Mutual Information":
             selector = SelectKBest(mutual_info_classif, k=6)
-            x = selector.fit_transform(self.x, self.y)
+            x_copy = selector.fit_transform(self.x, self.y)
         elif featuresselection == "F-Classif":
             selector = SelectKBest(f_classif, k=5)
-            x = selector.fit_transform(self.x, self.y)
+            x_copy = selector.fit_transform(self.x, self.y)
 
-        x_train, x_test, y_train, y_test = train_test_split(x, self.y, test_size=0.2, random_state=42, stratify= self.y)
+        x_train, x_test, y_train, y_test = train_test_split(x_copy, self.y, test_size=0.2, random_state=42, stratify= self.y)
 
         if outliersremoval:
             z = np.abs(stats.zscore(x_train))
@@ -70,7 +69,7 @@ class Dataset:
             x_train, y_train = rus.fit_resample(x_train, y_train)
             print("Distribuzione delle classi nel set di addestramento bilanciato")
 
-        self.set_data(x_train, x_test, y_train, y_test, self.x, self.y)
+        self.set_data(x_train, x_test, y_train, y_test)
 
         
 
