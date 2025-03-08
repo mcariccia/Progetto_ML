@@ -18,7 +18,7 @@ def AddestramentoClassificatori(x_train, x_test, y_train, y_test, classificatore
 
         #best_params = TuningIperparametri(svm.SVC(), param_grid, x_train, y_train) #perchè spiegato nella relazione sulla parte del tuning di SVM
         # Addestramento del classificatore SVM con parametri predefiniti
-        best_clf = svm.SVC(C=100, gamma=1, kernel='rbf')#per provare il tuning basta mettere (**best_params) come parametro in questa riga togliendo i parametri di default
+        best_clf = svm.SVC(C=100, gamma=1, kernel='rbf')#per provare il tuning basta mettere (**best_params) come parametro in questa riga togliendo i parametri di default, si consiglia la Standardizzazione nel PreProcessing per farla
         best_clf.fit(x_train, y_train)
         y_predv = best_clf.predict(x_test)
         test_accuracy = accuracy_score(y_test, y_predv)
